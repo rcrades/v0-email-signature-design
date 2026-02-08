@@ -2,14 +2,15 @@
 
 import type React from "react"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Check, Copy, Upload, X, Eye } from "lucide-react"
+import { Check, Copy, Upload, X, Eye, Sun, Moon } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useTheme } from "next-themes"
 
 interface FormData {
   name: string
@@ -183,6 +184,12 @@ export default function EmailSignaturePage() {
   const [hiddenFields, setHiddenFields] = useState<Set<string>>(new Set())
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { toast } = useToast()
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const signatures = generateSignatures(formData, hiddenFields)
 
@@ -277,6 +284,17 @@ export default function EmailSignaturePage() {
   return (
     <main className="min-h-screen bg-background py-8 px-4 sm:py-16">
       <div className="max-w-4xl mx-auto">
+        {mounted && (
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="p-2 rounded-lg border border-border bg-card hover:bg-accent transition-colors"
+              aria-label="Toggle theme"
+            >
+              {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+          </div>
+        )}
         <div className="text-center mb-10 sm:mb-14">
           <h1 className="text-3xl sm:text-5xl font-semibold mb-3 text-foreground tracking-tight text-balance">
             Email Signature Generator
